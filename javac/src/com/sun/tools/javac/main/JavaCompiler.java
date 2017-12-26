@@ -849,14 +849,19 @@ public class JavaCompiler {
         start_msec = now();
 
         try {
+            //初始化插入式注解处理器
             initProcessAnnotations(processors);
 
             // These method calls must be chained to avoid memory leaks
             delegateCompiler =
+                    //执行注解处理
                 processAnnotations(
-                    enterTrees(stopIfError(CompileState.PARSE, parseFiles(sourceFileObjects))),
+                        //输入到符号表
+                    enterTrees(stopIfError(CompileState.PARSE,
+                            //词法分析、语法分析
+                            parseFiles(sourceFileObjects))),
                     classnames);
-
+            //分析及字节码生成
             delegateCompiler.compile2();
             delegateCompiler.close();
             elapsed_msec = delegateCompiler.elapsed_msec;
@@ -898,7 +903,14 @@ public class JavaCompiler {
 
             case BY_TODO:
                 while (!todo.isEmpty())
-                    generate(desugar(flow(attribute(todo.remove()))));
+                    //生成字节码
+                    generate(
+                            //解语法糖
+                            desugar(
+                                    //数据流分析
+                                    flow(
+                                            //标注
+                                            attribute(todo.remove()))));
                 break;
 
             default:
